@@ -10,12 +10,17 @@ function! CliGPT(mode, is_selection, ...) range
     if l:instruction == ""
         if a:is_selection
             let l:lines = join(getline(a:firstline, a:lastline), "\n")
-            let l:cmd = "echo ".shellescape(l:lines)." | ".g:cligptprg." -s -"
-        else
-            let l:cmd = g:cligptprg
+            let l:cmd = g:cligptprg." -i -s ".shellescape(l:lines)
+
+            let l:result = system(l:cmd)
+
+            if v:shell_error != 0
+                echohl ErrorMsg | echo "Somthing wrong" | echohl None
+                return
+            endif
         endif
 
-        execute "vertical terminal ++close ".l:cmd
+        execute "vertical terminal ++close ".g:cligptprg
         return
     endif
 
@@ -43,12 +48,45 @@ function! CliGPT(mode, is_selection, ...) range
     execute "normal! ".l:insert.l:result
 endfunction
 
-" function! CliGPTFile(file, ...)
-"     " echo "file: ".a:file
-"     let l:instruction = a:0 ? a:1 : ""
-"     echo "instruction: ".l:instruction
-"     let l:cmd = "cat ".a:file." | ".g:cligptprg." -s - ".shellescape(l:instruction." ".g:preprompt)
-" endfunction
+function! CliGPTFile(...)
+    if a:0 == 0
+        echohl ErrorMsg | echo "No file specified" | echohl None
+        return
+    endif
+
+    let l:splited = split(a:1, " ")
+    let l:file = l:splited[0]
+    let l:instruction = join(l:splited[1:], " ")
+
+    if filereadable(l:file) == 0
+        echohl ErrorMsg | echo "File not found" | echohl None
+        return
+    endif
+
+    if l:instruction == ""
+        let l:cmd = "cat ".l:file." | ".g:cligptprg." -i -s -"
+        let l:result = system(l:cmd)
+
+        if v:shell_error != 0
+            echohl ErrorMsg | echo "Somthing wrong" | echohl None
+            return
+        endif
+
+        execute "vertical terminal ++close ".g:cligptprg
+        return
+    endif
+
+    let l:cmd = "cat ".shellescape(l:file)." | ".g:cligptprg." -s - ".shellescape(l:instruction." ".g:preprompt)
+    echo "Processing please wait ..."
+    let l:result = system(l:cmd)
+
+    if v:shell_error != 0
+        echohl ErrorMsg | echo "Somthing wrong" | echohl None
+        return
+    endif
+
+    execute "normal! o".l:result
+endfunction
 
 function! CliGPTListHitory()
     let l:cmd = g:cligptprg." -L"
@@ -84,6 +122,6 @@ endfunction
 
 command! -range -nargs=? Cligpt <line1>,<line2>call CliGPT(0, <range>, <f-args>)
 command! -range -nargs=? CligptAdd <line1>,<line2>call CliGPT(1, <range>, <f-args>)
-" command! -nargs=? CligptFile call CliGPTFile(file, <f-args>)
+command! -nargs=? CligptFile call CliGPTFile(<f-args>)
 command! CligptHistory call CliGPTListHitory()
 command! CligptClearHistory call CliGPTClearHistory()
