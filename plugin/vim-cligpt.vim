@@ -12,7 +12,7 @@ function! CliGPT(mode, is_selection, ...) range
             let l:lines = join(getline(a:firstline, a:lastline), "\n")
             let l:cmd = g:cligptprg." -i -s ".shellescape(l:lines)
 
-            let l:result = system(l:cmd)
+            call system(l:cmd)
 
             if v:shell_error != 0
                 echohl ErrorMsg | echo "Somthing wrong" | echohl None
@@ -43,8 +43,8 @@ function! CliGPT(mode, is_selection, ...) range
         echohl ErrorMsg | echo "Somthing wrong" | echohl None
         return
     endif
-    let l:insert = a:is_selection ? "i" : "o"
 
+    let l:insert = a:is_selection ? "i" : "o"
     execute "normal! ".l:insert.l:result
 endfunction
 
@@ -65,7 +65,7 @@ function! CliGPTFile(...)
 
     if l:instruction == ""
         let l:cmd = "cat ".l:file." | ".g:cligptprg." -i -s -"
-        let l:result = system(l:cmd)
+        call system(l:cmd)
 
         if v:shell_error != 0
             echohl ErrorMsg | echo "Somthing wrong" | echohl None
@@ -110,7 +110,7 @@ endfunction
 
 function! CliGPTClearHistory()
     let l:cmd = g:cligptprg." -c"
-    let l:result = system(l:cmd)
+    call system(l:cmd)
 
     if v:shell_error != 0
         echohl ErrorMsg | echo "Somthing wrong" | echohl None
@@ -122,6 +122,6 @@ endfunction
 
 command! -range -nargs=? Cligpt <line1>,<line2>call CliGPT(0, <range>, <f-args>)
 command! -range -nargs=? CligptAdd <line1>,<line2>call CliGPT(1, <range>, <f-args>)
-command! -nargs=? CligptFile call CliGPTFile(<f-args>)
+command! -nargs=? -complete=file CligptFile call CliGPTFile(<f-args>)
 command! CligptHistory call CliGPTListHitory()
 command! CligptClearHistory call CliGPTClearHistory()
