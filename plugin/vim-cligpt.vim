@@ -1,8 +1,8 @@
 let g:cligptprg="cligpt"
-" let g:preprompt="donne aucune explication"
 let g:preprompt=""
 let g:model="gpt-3.5-turbo"
 let g:temperature=0.7
+let g:cligptcmd="cligpt -m ".g:model." -t ".g:temperature
 
 function! CliGPT(mode, is_selection, ...) range
     let l:instruction = a:0 ? a:1 : ""
@@ -20,20 +20,21 @@ function! CliGPT(mode, is_selection, ...) range
             endif
         endif
 
-        execute "vertical terminal ++close ".g:cligptprg
+        execute "vertical terminal ++close ".g:cligptcmd
         return
     endif
 
     if a:is_selection
         let l:lines = join(getline(a:firstline, a:lastline), "\n")
-        let l:cmd = g:cligptprg." -s ".shellescape(l:lines)." ".shellescape(l:instruction." ".g:preprompt)
-        if a:mode == 0
-            execute "normal! ".a:firstline."GV".a:lastline."Gc"
-        else
-            execute "normal! ".a:lastline."Go"
-        endif
+        let l:cmd = g:cligptcmd." -s ".shellescape(l:lines)." ".shellescape(l:instruction." ".g:preprompt)
+
+        let l:exec = a:mode == 0 
+            \? "normal! ".a:firstline."GV".a:lastline."Gc"
+            \: "normal! ".a:lastline."Go"
+
+        execute l:exec
     else
-        let l:cmd = g:cligptprg." ".shellescape(l:instruction." ".g:preprompt)
+        let l:cmd = g:cligptcmd." ".shellescape(l:instruction." ".g:preprompt)
     endif
 
     echo "Processing please wait ..."
@@ -72,11 +73,11 @@ function! CliGPTFile(...)
             return
         endif
 
-        execute "vertical terminal ++close ".g:cligptprg
+        execute "vertical terminal ++close ".g:cligptcmd
         return
     endif
 
-    let l:cmd = "cat ".shellescape(l:file)." | ".g:cligptprg." -s - ".shellescape(l:instruction." ".g:preprompt)
+    let l:cmd = "cat ".l:file." | ".g:cligptcmd." -s - ".shellescape(l:instruction." ".g:preprompt)
     echo "Processing please wait ..."
     let l:result = system(l:cmd)
 
