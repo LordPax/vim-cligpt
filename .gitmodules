@@ -1,0 +1,3 @@
+[submodule "cligpt"]
+	path = cligpt
+	url = https://github.com/LordPax/cligpt.git

@@ -1,9 +1,8 @@
-let g:cligptprg="cligpt"
+let g:cligptprg="./cligpt/cligpt"
 let g:preprompt=""
-echo "model: ".g:cligpt_model
-let g:model=g:cligpt_model ? g:cligpt_model : "gpt-3.5-turbo"
-let g:temperature=g:cligpt_temperature ? g:cligpt_temperature : "0.7"
-let g:cligptcmd="cligpt -m ".g:model." -t ".g:temperature
+let g:model="gpt-3.5-turbo"
+let g:temperature="0.7"
+let g:cligptcmd=g:cligptprg." -m ".g:model." -t ".g:temperature
 
 function! CliGPT(mode, is_selection, ...) range
     let l:instruction = a:0 ? a:1 : ""
