@@ -1,4 +1,4 @@
-let g:cligptprg="./cligpt/cligpt"
+let g:cligptprg=$HOME."/.vim/plugged/vim-cligpt/cligpt/cligpt"
 let g:preprompt=""
 let g:model="gpt-3.5-turbo"
 let g:temperature="0.7"
