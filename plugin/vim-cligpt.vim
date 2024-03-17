@@ -2,7 +2,8 @@ let g:cligptprg=$HOME."/.vim/plugged/vim-cligpt/cligpt/cligpt"
 let g:preprompt=""
 let g:model="gpt-3.5-turbo"
 let g:temperature="0.7"
-let g:cligptcmd=g:cligptprg." -m ".g:model." -t ".g:temperature
+let g:cligptcmd=g:cligptprg." text -m ".g:model." -t ".g:temperature
+let g:cligptcmdInerte=g:cligptprg." -i text -m ".g:model." -t ".g:temperature
 
 function! CliGPT(mode, is_selection, ...) range
     let l:instruction = a:0 ? a:1 : ""
@@ -10,7 +11,7 @@ function! CliGPT(mode, is_selection, ...) range
     if l:instruction == ""
         if a:is_selection
             let l:lines = join(getline(a:firstline, a:lastline), "\n")
-            let l:cmd = g:cligptprg." -i -s ".shellescape(l:lines)
+            let l:cmd = g:cligptprg." -i text -s ".shellescape(l:lines)
 
             call system(l:cmd)
 
@@ -65,7 +66,7 @@ function! CliGPTFile(...)
     endif
 
     if l:instruction == ""
-        let l:cmd = "cat ".l:file." | ".g:cligptprg." -i -s -"
+        let l:cmd = "cat ".l:file." | ".g:cligptprg." -i text -s -"
         call system(l:cmd)
 
         if v:shell_error != 0
@@ -90,7 +91,7 @@ function! CliGPTFile(...)
 endfunction
 
 function! CliGPTListHitory()
-    let l:cmd = g:cligptprg." -L"
+    let l:cmd = g:cligptprg." text -l"
     let l:result = system(l:cmd)
 
     if v:shell_error != 0
@@ -110,7 +111,7 @@ function! CliGPTListHitory()
 endfunction
 
 function! CliGPTClearHistory()
-    let l:cmd = g:cligptprg." -c"
+    let l:cmd = g:cligptprg." text -c"
     call system(l:cmd)
 
     if v:shell_error != 0
