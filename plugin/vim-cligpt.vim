@@ -1,4 +1,5 @@
-let g:cligptprg=$HOME."/.vim/plugged/vim-cligpt/cligpt/cligpt"
+" let g:cligptprg=$HOME."/.vim/plugged/vim-cligpt/cligpt/cligpt"
+let g:cligptprg="cligpt"
 let g:preprompt=""
 let g:model="gpt-3.5-turbo"
 let g:temperature="0.7"
@@ -122,8 +123,27 @@ function! CliGPTClearHistory()
     echo "History cleared"
 endfunction
 
+function! CliGPTSpeech(...)
+    let l:cmd = g:cligptprg." -q speech"
+
+    if a:0 == 1
+        let l:cmd = l:cmd." -l ".a:1
+    endif
+
+    echo "Recording audio (Ctrl+C to stop) ..."
+    let l:result = system(l:cmd)
+
+    if v:shell_error != 0
+        echohl ErrorMsg | echo "Somthing wrong" | echohl None
+        return
+    endif
+
+    execute "normal! a".l:result
+endfunction
+
 command! -range -nargs=? Cligpt <line1>,<line2>call CliGPT(0, <range>, <f-args>)
 command! -range -nargs=? CligptAdd <line1>,<line2>call CliGPT(1, <range>, <f-args>)
 command! -nargs=? -complete=file CligptFile call CliGPTFile(<f-args>)
+command! -nargs=? CligptSpeech call CliGPTSpeech(<f-args>)
 command! CligptHistory call CliGPTListHitory()
 command! CligptClearHistory call CliGPTClearHistory()
