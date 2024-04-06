@@ -92,7 +92,7 @@ function! CliGPTFile(...)
 endfunction
 
 function! CliGPTListHitory()
-    let l:cmd = g:cligptprg." text -l"
+    let l:cmd = g:cligptprg." -q text --list-json-history"
     let l:result = system(l:cmd)
 
     if v:shell_error != 0
