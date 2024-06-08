@@ -1,7 +1,7 @@
 let g:cligptprg=$HOME."/.vim/plugged/vim-cligpt/cligpt/cligpt"
 " let g:cligptprg="cligpt"
 let g:preprompt=""
-let g:model="gpt-3.5-turbo"
+let g:model="gpt-4o"
 let g:temperature="0.7"
 let g:cligptcmd=g:cligptprg." text -m ".g:model." -t ".g:temperature
 let g:cligptcmdInerte=g:cligptprg." -i text -m ".g:model." -t ".g:temperature
